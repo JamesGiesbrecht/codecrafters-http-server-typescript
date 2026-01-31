@@ -3,9 +3,15 @@
   "description": "Build your own HTTP server challenge, from CodeCrafters",
   "type": "module",
   "scripts": {
-    "dev": "bun run app/main.ts"
+    "dev": "bun run app/main.ts",
+    "test:build": "cd codecrafters-tester && make build",
+    "challenge": "open -a 'Google Chrome' https://app.codecrafters.io/courses/http-server/overview"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/debug": "^4.1.12"
+  },
+  "dependencies": {
+    "debug": "^4.4.3"
   }
 }
