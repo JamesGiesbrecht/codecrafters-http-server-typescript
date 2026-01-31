@@ -1,0 +1,3 @@
+[submodule "codecrafters-tester"]
+	path = codecrafters-tester
+	url = git@github.com:codecrafters-io/http-server-tester.git
