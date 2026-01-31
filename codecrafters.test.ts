@@ -1,5 +1,5 @@
 import { $, stripANSI } from "bun";
-import { expect, test } from "bun:test";
+import { afterAll, expect, test } from "bun:test";
 // @ts-ignore
 import { stages as courseStages } from "./codecrafters-tester/internal/test_helpers/course_definition.yml";
 
@@ -46,9 +46,37 @@ const runTest = async (stage: Stage) => {
 // EX: CURRENT_STAGE=3 runs the first 3 stages
 const testStages = stages.slice(0, Number(CURRENT_STAGE));
 
+let allTestsPassed = true;
+
+console.log(
+  `🧪 Running ${testStages.length} test stages of ${stages.length}\n`,
+);
+
 // Generate individual test cases for each stage
 testStages.forEach((testStage) => {
   test(testStage.title, async () => {
-    await runTest(testStage);
+    try {
+      await runTest(testStage);
+    } catch (error) {
+      allTestsPassed = false;
+      throw error;
+    }
   });
+});
+
+afterAll(() => {
+  if (allTestsPassed) {
+    if (testStages.length === stages.length) {
+      console.log(
+        `\n🎉 Congratulations! All ${testStages.length} stages passed.`,
+      );
+    } else {
+      console.log(
+        `\n🎉 Stage ${CURRENT_STAGE} passed. Update CURRENT_STAGE for the next stage.\n`,
+      );
+      console.log(
+        `$ sed -i '' 's/^CURRENT_STAGE=.*/CURRENT_STAGE=${Number(CURRENT_STAGE) + 1}/' .env`,
+      );
+    }
+  }
 });
