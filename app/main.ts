@@ -1,8 +1,13 @@
 import * as net from "net";
-import { createLogger } from "./helpers/utils";
-import { CONSTANTS } from "./constants";
+import {
+  buildResponse,
+  createLogger,
+  getRoute,
+  parseHTTPRequest,
+} from "./helpers/utils";
 
 const log = createLogger("server");
+const { PORT } = process.env;
 
 const server = net.createServer((socket) => {
   log(`Connection from ${socket.remoteAddress}:${socket.remotePort}`);
@@ -12,11 +17,17 @@ const server = net.createServer((socket) => {
     socket.end();
   });
 
-  socket.write(`HTTP/1.1 200 OK${CONSTANTS.CRLF}${CONSTANTS.CRLF}`);
+  socket.on("data", (data) => {
+    const req = parseHTTPRequest(data);
+    const res = getRoute(req);
+    socket.write(buildResponse(res));
+  });
 });
 
 server.on("error", (err) => {
   throw err;
 });
 
-server.listen(4221, "localhost");
+server.listen({ port: Number(PORT), host: "localhost" }, () => {
+  log(`Server is listening on port ${PORT}`);
+});
