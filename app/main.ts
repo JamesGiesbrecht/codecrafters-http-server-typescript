@@ -9,6 +9,15 @@ import {
 const log = createLogger("server");
 const { PORT } = process.env;
 
+const filesDirectoryIndex = process.argv.findIndex(
+  (arg) => arg === "--directory",
+);
+
+export let filesDirectory = "/tmp/";
+if (filesDirectoryIndex > -1 && process.argv[filesDirectoryIndex + 1]) {
+  filesDirectory = process.argv[filesDirectoryIndex + 1];
+}
+
 const server = net.createServer((socket) => {
   log(`Connection from ${socket.remoteAddress}:${socket.remotePort}`);
 
