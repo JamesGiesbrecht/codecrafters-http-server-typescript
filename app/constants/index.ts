@@ -2,6 +2,7 @@ import fs from "fs";
 import type { HTTPRequest, RouteHandler, StatusCodeType } from "../types";
 import path from "path";
 import { filesDirectory } from "../main";
+import { HeadersEnum, HTTPMethodEnum } from "./enums";
 
 export const CONSTANTS = {
   CRLF: "\r\n",
@@ -11,6 +12,10 @@ export const StatusCode: { [key: string]: StatusCodeType } = {
   OK: {
     code: 200,
     name: "OK",
+  },
+  CREATED: {
+    code: 201,
+    name: "Created",
   },
   NOT_FOUND: {
     code: 404,
@@ -39,8 +44,8 @@ export const routes: { [key: string]: RouteHandler } = {
       httpVersion: req.httpVersion,
       status: StatusCode.OK,
       headers: {
-        "Content-Type": "text/plain",
-        "Content-Length": body.length.toString(),
+        [HeadersEnum.CONTENT_TYPE]: "text/plain",
+        [HeadersEnum.CONTENT_LENGTH]: body.length.toString(),
       },
       body,
     };
@@ -58,8 +63,8 @@ export const routes: { [key: string]: RouteHandler } = {
       httpVersion: req.httpVersion,
       status: StatusCode.OK,
       headers: {
-        "Content-Type": "text/plain",
-        "Content-Length": body.length.toString(),
+        [HeadersEnum.CONTENT_TYPE]: "text/plain",
+        [HeadersEnum.CONTENT_LENGTH]: body.length.toString(),
       },
       body,
     };
@@ -68,16 +73,21 @@ export const routes: { [key: string]: RouteHandler } = {
     const filePath = path.join(filesDirectory, req.path[1]);
     let status = StatusCode.OK;
     let body = "";
-    let file = null;
-    const headers: Record<string, string> = {
-      "Content-Type": "application/octet-stream",
-    };
-    if (!fs.existsSync(filePath)) {
-      status = StatusCode.NOT_FOUND;
-    } else {
-      file = fs.readFileSync(path.join(filesDirectory, req.path[1]));
-      body = file.toString();
-      headers["Content-Length"] = file.length.toString();
+    const headers: Record<string, string> = {};
+    switch (req.method) {
+      case HTTPMethodEnum.GET:
+        if (!fs.existsSync(filePath)) {
+          status = StatusCode.NOT_FOUND;
+        } else {
+          const file = fs.readFileSync(path.join(filesDirectory, req.path[1]));
+          body = file.toString();
+          headers[HeadersEnum.CONTENT_TYPE] = "application/octet-stream";
+          headers[HeadersEnum.CONTENT_LENGTH] = file.length.toString();
+        }
+        break;
+      case HTTPMethodEnum.POST:
+        fs.writeFileSync(filePath, req.body);
+        status = StatusCode.CREATED;
     }
 
     return {

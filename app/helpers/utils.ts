@@ -22,13 +22,16 @@ export const parseHTTPRequest = (request: string | Buffer): HTTPRequest => {
   }
   const host = lines[1].split(" ")[1];
   const headers: Record<string, string> = {};
-  lines.slice(2).forEach((line) => {
+  // Headers located between the first two and last two lines
+  // [requestLine, host, ...headers, /r/n, body]
+  lines.slice(2, -2).forEach((line) => {
+    console.log({ line });
     if (line) {
       const [key, val] = line.split(": ");
       headers[key] = val;
     }
   });
-  const body = "";
+  const body = lines[lines.length - 1];
 
   const parsedReq = {
     method,
