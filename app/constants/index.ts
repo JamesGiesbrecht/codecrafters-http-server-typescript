@@ -42,6 +42,25 @@ export const routes: { [key: string]: RouteHandler } = {
       body,
     };
   },
+  "user-agent": (req: HTTPRequest) => {
+    const body =
+      req.headers[
+        Object.keys(req.headers).find(
+          (key) => key.toLowerCase() === "user-agent",
+        ) || ""
+      ];
+
+    return {
+      method: req.method,
+      httpVersion: req.httpVersion,
+      status: StatusCode.OK,
+      headers: {
+        "Content-Type": "text/plain",
+        "Content-Length": body.length.toString(),
+      },
+      body,
+    };
+  },
 };
 
 export const notFoundRoute: RouteHandler = (req: HTTPRequest) => {
