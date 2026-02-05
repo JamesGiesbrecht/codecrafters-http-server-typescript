@@ -76,11 +76,14 @@ export const applyCompression = (
 ): HTTPResponse => {
   const encodingHeader = req.headers[HeadersEnum.ACCEPT_ENCODING];
   if (encodingHeader) {
-    switch (encodingHeader) {
-      case EncodingTypeEnum.GZIP:
-        res.body = Bun.gzipSync(res.body).toString();
-        res.headers[HeadersEnum.CONTENT_ENCODING] = EncodingTypeEnum.GZIP;
-    }
+    const encodings = encodingHeader.replaceAll(" ", "").split(",");
+    encodings.forEach((encoding) => {
+      switch (encoding) {
+        case EncodingTypeEnum.GZIP:
+          res.body = Bun.gzipSync(res.body).toString();
+          res.headers[HeadersEnum.CONTENT_ENCODING] = EncodingTypeEnum.GZIP;
+      }
+    });
   }
   return res;
 };
