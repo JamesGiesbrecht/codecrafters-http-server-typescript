@@ -19,7 +19,7 @@ export type HTTPResponse = {
   httpVersion: string;
   status: StatusCodeType;
   headers: { [key: string]: string };
-  body: string;
+  body: string | buffer;
 };
 
 export type RouteHandler = (request: HTTPRequest) => HTTPResponse;

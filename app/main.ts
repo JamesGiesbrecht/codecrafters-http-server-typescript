@@ -29,8 +29,10 @@ const server = net.createServer((socket) => {
 
   socket.on("data", (data) => {
     const req = parseHTTPRequest(data);
-    const res = applyCompression(req, getRoute(req));
+    let res = getRoute(req);
+    res = applyCompression(req, res);
     socket.write(buildResponse(res));
+    socket.write(res.body);
   });
 });
 

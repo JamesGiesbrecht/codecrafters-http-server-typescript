@@ -1,4 +1,5 @@
 import debug from "debug";
+import zlib from "node:zlib";
 import { CONSTANTS, notFoundRoute, routes } from "../constants";
 import type { HTTPRequest, HTTPResponse } from "../types";
 import {
@@ -50,13 +51,13 @@ export const parseHTTPRequest = (request: string | Buffer): HTTPRequest => {
 };
 
 export const buildResponse = (res: HTTPResponse): string => {
-  const { headers, body } = res;
+  const { headers } = res;
   let response = `${res.httpVersion} ${res.status.code} ${res.status.name}\r\n`;
   Object.keys(headers).forEach((key) => {
     response += `${key}: ${headers[key]}\r\n`;
   });
   response += CRLF;
-  response += body;
+  log("HTTP Response String: ", response);
   return response;
 };
 
@@ -76,14 +77,18 @@ export const applyCompression = (
 ): HTTPResponse => {
   const encodingHeader = req.headers[HeadersEnum.ACCEPT_ENCODING];
   if (encodingHeader) {
-    const encodings = encodingHeader.replaceAll(" ", "").split(",");
+    const encodings = encodingHeader?.replaceAll(" ", "")?.split(",");
     encodings.forEach((encoding) => {
       switch (encoding) {
         case EncodingTypeEnum.GZIP:
-          res.body = Bun.gzipSync(res.body).toString();
+          const encodedData = zlib.gzipSync(res.body);
+          res.body = encodedData;
           res.headers[HeadersEnum.CONTENT_ENCODING] = EncodingTypeEnum.GZIP;
+          res.headers[HeadersEnum.CONTENT_LENGTH] =
+            encodedData.length.toString();
       }
     });
   }
+
   return res;
 };
