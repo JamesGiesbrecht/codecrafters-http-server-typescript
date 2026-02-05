@@ -1,7 +1,11 @@
 import debug from "debug";
 import { CONSTANTS, notFoundRoute, routes } from "../constants";
 import type { HTTPRequest, HTTPResponse } from "../types";
-import { HTTPMethodEnum } from "../constants/enums";
+import {
+  EncodingTypeEnum,
+  HeadersEnum,
+  HTTPMethodEnum,
+} from "../constants/enums";
 
 const { CRLF } = CONSTANTS;
 
@@ -63,5 +67,20 @@ export const getRoute = (req: HTTPRequest): HTTPResponse => {
   }
   const res = routes[routeKey](req);
   log("HTTP Response: ", res);
+  return res;
+};
+
+export const applyCompression = (
+  req: HTTPRequest,
+  res: HTTPResponse,
+): HTTPResponse => {
+  const encodingHeader = req.headers[HeadersEnum.ACCEPT_ENCODING];
+  if (encodingHeader) {
+    switch (encodingHeader) {
+      case EncodingTypeEnum.GZIP:
+        res.body = Bun.gzipSync(res.body).toString();
+        res.headers[HeadersEnum.CONTENT_ENCODING] = EncodingTypeEnum.GZIP;
+    }
+  }
   return res;
 };

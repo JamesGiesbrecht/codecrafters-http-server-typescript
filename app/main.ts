@@ -1,5 +1,6 @@
 import * as net from "net";
 import {
+  applyCompression,
   buildResponse,
   createLogger,
   getRoute,
@@ -28,7 +29,7 @@ const server = net.createServer((socket) => {
 
   socket.on("data", (data) => {
     const req = parseHTTPRequest(data);
-    const res = getRoute(req);
+    const res = applyCompression(req, getRoute(req));
     socket.write(buildResponse(res));
   });
 });

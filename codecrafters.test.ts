@@ -33,13 +33,13 @@ const runTest = async (stage: Stage) => {
         $(pwd)/codecrafters-tester/dist/main.out
       `.text(),
     );
+    expect(result).toContain(stage.title);
+    expect(result).toEndWith(`[${stage.tester_log_prefix}] Test passed.\n`);
   } catch (error) {
     const err = error as any;
     console.log(`Failed with code ${err.exitCode}`);
-    console.log(err.stdout.toString());
+    throw new Error(err.stdout.toString());
   }
-  expect(result).toContain(stage.title);
-  expect(result).toEndWith(`[${stage.tester_log_prefix}] Test passed.\n`);
 };
 
 // Get the tests for the current step in the path
