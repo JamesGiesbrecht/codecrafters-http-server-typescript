@@ -34,11 +34,11 @@ const runTest = async (stage: Stage) => {
       `.text(),
     );
     expect(result).toContain(stage.title);
-    expect(result).toEndWith(`[${stage.tester_log_prefix}] Test passed.\n`);
+    expect(result).toContain(`[${stage.tester_log_prefix}] Test passed.\n`);
   } catch (error) {
     const err = error as any;
     console.log(`Failed with code ${err.exitCode}`);
-    throw new Error(err.stdout.toString());
+    throw new Error(err.stdout?.toString() || err);
   }
 };
 

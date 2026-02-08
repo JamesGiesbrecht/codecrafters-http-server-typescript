@@ -30,7 +30,6 @@ export const parseHTTPRequest = (request: string | Buffer): HTTPRequest => {
   // Headers located between the first two and last two lines
   // [requestLine, host, ...headers, /r/n, body]
   lines.slice(2, -2).forEach((line) => {
-    console.log({ line });
     if (line) {
       const [key, val] = line.split(": ");
       headers[key] = val;
@@ -67,6 +66,9 @@ export const getRoute = (req: HTTPRequest): HTTPResponse => {
     return notFoundRoute(req);
   }
   const res = routes[routeKey](req);
+  if (req.headers[HeadersEnum.CONNECTION] === "close") {
+    res.headers[HeadersEnum.CONNECTION] = "close";
+  }
   log("HTTP Response: ", res);
   return res;
 };
@@ -91,4 +93,16 @@ export const applyCompression = (
   }
 
   return res;
+};
+
+export const getFilesDir = (): string => {
+  const filesDirectoryIndex = process.argv.findIndex((arg) =>
+    arg.startsWith("--directory"),
+  );
+
+  let filesDirectory = "/tmp/";
+  if (filesDirectoryIndex > -1 && process.argv[filesDirectoryIndex + 1]) {
+    filesDirectory = process.argv[filesDirectoryIndex + 1];
+  }
+  return filesDirectory;
 };

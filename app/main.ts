@@ -6,24 +6,15 @@ import {
   getRoute,
   parseHTTPRequest,
 } from "./helpers/utils";
+import { HeadersEnum } from "./constants/enums";
 
 const log = createLogger("server");
 const { PORT } = process.env;
-
-const filesDirectoryIndex = process.argv.findIndex(
-  (arg) => arg === "--directory",
-);
-
-export let filesDirectory = "/tmp/";
-if (filesDirectoryIndex > -1 && process.argv[filesDirectoryIndex + 1]) {
-  filesDirectory = process.argv[filesDirectoryIndex + 1];
-}
 
 const server = net.createServer((socket) => {
   log(`Connection from ${socket.remoteAddress}:${socket.remotePort}`);
 
   socket.on("close", () => {
-    log(`Connection closed from ${socket.remoteAddress}:${socket.remotePort}`);
     socket.end();
   });
 
@@ -33,6 +24,9 @@ const server = net.createServer((socket) => {
     res = applyCompression(req, res);
     socket.write(buildResponse(res));
     socket.write(res.body);
+    if (res.headers[HeadersEnum.CONNECTION].toLowerCase() === "close") {
+      socket.end();
+    }
   });
 });
 

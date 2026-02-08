@@ -1,8 +1,8 @@
 import fs from "fs";
 import type { HTTPRequest, RouteHandler, StatusCodeType } from "../types";
 import path from "path";
-import { filesDirectory } from "../main";
 import { HeadersEnum, HTTPMethodEnum } from "./enums";
+import { getFilesDir } from "../helpers/utils";
 
 export const CONSTANTS = {
   CRLF: "\r\n",
@@ -70,7 +70,8 @@ export const routes: { [key: string]: RouteHandler } = {
     };
   },
   files: (req: HTTPRequest) => {
-    const filePath = path.join(filesDirectory, req.path[1]);
+    const filesDir = getFilesDir();
+    const filePath = path.join(filesDir, req.path[1]);
     let status = StatusCode.OK;
     let body = "";
     const headers: Record<string, string> = {};
@@ -79,7 +80,7 @@ export const routes: { [key: string]: RouteHandler } = {
         if (!fs.existsSync(filePath)) {
           status = StatusCode.NOT_FOUND;
         } else {
-          const file = fs.readFileSync(path.join(filesDirectory, req.path[1]));
+          const file = fs.readFileSync(path.join(filesDir, req.path[1]));
           body = file.toString();
           headers[HeadersEnum.CONTENT_TYPE] = "application/octet-stream";
           headers[HeadersEnum.CONTENT_LENGTH] = file.length.toString();

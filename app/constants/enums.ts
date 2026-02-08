@@ -10,6 +10,7 @@ export enum HeadersEnum {
   CONTENT_LENGTH = "Content-Length",
   ACCEPT_ENCODING = "Accept-Encoding",
   CONTENT_ENCODING = "Content-Encoding",
+  CONNECTION = "Connection",
 }
 
 export enum EncodingTypeEnum {
