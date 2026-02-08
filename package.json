@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "bun run app/main.ts",
     "test:build": "cd codecrafters-tester && make build",
+    "kill": "kill -9 $(lsof -ti:4221)",
     "challenge": "open -a 'Google Chrome' https://app.codecrafters.io/courses/http-server/overview"
   },
   "devDependencies": {
