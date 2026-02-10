@@ -2,7 +2,7 @@
 
 # 🌐 HTTP/1.1 Server Implementation in TypeScript
 
-A lightweight implementation HTTP/1.1 server built from scratch in Node.js. This project handles multiple concurrent clients, supports persistent connections, file operations, compression, and follows HTTP/1.1 specifications.
+A lightweight implementation HTTP/1.1 server built from scratch in TypeScript/Bun. This project handles multiple concurrent clients, supports persistent connections, file operations, compression, and follows HTTP/1.1 specifications.
 
 Built as part of the [CodeCrafters](https://codecrafters.io) "Build your own HTTP Server" challenge.
 

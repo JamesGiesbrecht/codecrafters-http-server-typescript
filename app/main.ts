@@ -1,12 +1,6 @@
 import * as net from "net";
-import {
-  applyCompression,
-  buildResponse,
-  createLogger,
-  getRoute,
-  parseHTTPRequest,
-} from "./helpers/utils";
-import { HeadersEnum } from "./constants/enums";
+import { createLogger } from "./helpers/utils";
+import { HTTPRequest } from "./models/HTTPRequest";
 
 const log = createLogger("server");
 const { PORT } = process.env;
@@ -19,12 +13,11 @@ const server = net.createServer((socket) => {
   });
 
   socket.on("data", (data) => {
-    const req = parseHTTPRequest(data);
-    let res = getRoute(req);
-    res = applyCompression(req, res);
-    socket.write(buildResponse(res));
+    const req = new HTTPRequest(data);
+    let res = req.generateResponse();
+    socket.write(res.response);
     socket.write(res.body);
-    if (res.headers[HeadersEnum.CONNECTION].toLowerCase() === "close") {
+    if (res.shouldClose) {
       socket.end();
     }
   });
