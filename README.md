@@ -155,7 +155,7 @@ Pull codecrafters `http-server-tester` submodule:
 Build `http-server-tester` binary
 
   ```sh
-  bun test:build
+  bun build:tester
   ```
 
 Install dependencies
